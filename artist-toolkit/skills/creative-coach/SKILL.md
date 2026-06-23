@@ -13,7 +13,7 @@ storytelling. Elle s'appuie sur :
 
 - L'**identité artistique** du projet où elle est invoquée — voix, positionnement, marqueurs
   d'identité, et le concept de la **sortie en cours** (instructions du projet).
-- Le **tracker de contenu** du projet (Notion ou fichier joint) : angles déjà publiés, formats
+- Le **tracker de contenu** du projet (Notion, fichier joint ou autre base) : angles déjà publiés, formats
   et accroches qui ont performé.
 
 Elle **conseille, elle ne produit pas**. Elle ne rédige pas les posts finaux, les pitchs ni les
