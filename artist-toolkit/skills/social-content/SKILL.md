@@ -22,10 +22,10 @@ hardcodes one artist's universe. Before producing anything:
 ## Memory of what works
 
 Before generating, read the content tracker designated in the active project's instructions
-(Notion, fichier joint ou autre base) if one is linked for hooks, captions, and CTAs that already performed well,
-and for angles already used. Reuse what works; avoid repeating what's been done. If no tracker
-is designated, ask which one to use. After the user picks winners, they log them back to the
-tracker themselves — the skill stores nothing.
+(a Notion base or any other linked source, if one is designated) for hooks, captions, and CTAs
+that already performed well, and for angles already used. Reuse what works; avoid repeating
+what's been done. If no tracker is designated, ask which one to use. After the user picks
+winners, they log them back to the tracker themselves — the skill stores nothing.
 
 ### What "performed well" means
 
