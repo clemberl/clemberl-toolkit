@@ -23,7 +23,7 @@ hardcodes one artist's universe. Before producing anything:
 
 Before generating, read the content tracker designated in the active project's instructions
 (a Notion base or any other linked source, if one is designated) for hooks, captions, and CTAs
-that already performed well, and for angles already used. Reuse what works; avoid repeating
+that already performed well, for angles already used, and for social media content tips. Reuse what works; avoid repeating
 what's been done. If no tracker is designated, ask which one to use. After the user picks
 winners, they log them back to the tracker themselves — the skill stores nothing.
 
