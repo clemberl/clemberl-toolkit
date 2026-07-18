@@ -33,7 +33,7 @@ This skill is artist-agnostic on purpose, so it can serve any music project. Bef
 2. Up to 2 song styles
 3. Up to 2 music cultures
 4. Up to 2 moods
-5. Up to 2 instruments
+5. Instruments — no cap: select every instrument genuinely present and audible in the track, ordered by prominence. Never trim the list to 2; if the platform's picker rejects an entry, the user drops it there.
 6. Description (500 characters max including spaces — roughly 75-100 words, 3-5 sentences): the track's story, universe, inspirations. No over-explanation.
    Professional but authentic.
 
