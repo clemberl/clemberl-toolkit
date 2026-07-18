@@ -1,9 +1,9 @@
 ---
 name: curators-groover
-description: "Méthode pour gérer les campagnes Groover d'un artiste. Cinq fonctions — (0) ouverture de campagne : checklist d'entrée, intégration du bilan de la campagne précédente dans le registre (seul cas d'écriture, toujours diff validé avant), vérification des recos, rappel systématique de l'export/scoring des nouveaux curateurs arrivés depuis la dernière campagne, routage guidé en langage naturel vers les autres fonctions ; (1) pitch général d'un nouveau single ; (2) pitchs personnalisés en batch : sélection via la colonne de reco du registre, puis choix automatique entre 3 messages selon l'historique (premier envoi / relance après acceptation / relance après refus chaud) ; (3) scorer à la main un curateur (bio + genres collés) ; (4) scorer en batch depuis un export JSON Groover et bâtir le plan de campagne / répartir le budget Grooviz par EV. Déclencheurs : «nouvelle campagne Groover», «on lance la campagne [single]», «par où je commence pour ma campagne», «intègre le bilan de campagne», l'utilisateur fournit un CSV Bilan Campagne, «campagne Groover», «pitch général», «génère les pitchs», «score ce curateur», «j'ai trouvé un curateur», «score mes curateurs Groover», «plan de campagne Groover», «répartis mon budget Grooviz». Toujours passer par la Fonction 0 quand l'utilisateur démarre une campagne sans préciser de fonction. Suppose qu'un registre curateurs et des templates de pitchs vivent dans le projet actif (Notion, fichier joint ou autre base) et que l'identité artistique vit dans le projet. Aucune donnée d'artiste : méthode pure, réutilisable d'un projet à l'autre."
+description: "Méthode pour gérer les campagnes Groover d'un artiste. Cinq fonctions : (0) ouverture de campagne — checklist, intégration du bilan précédent au registre, vérification des recos, export/scoring des nouveaux curateurs, routage vers les autres fonctions ; (1) pitch général d'un single ; (2) pitchs personnalisés en batch selon l'historique de chaque curateur ; (3) scoring manuel d'un curateur (bio + genres) ; (4) scoring en batch depuis un export JSON Groover + plan de campagne et répartition du budget Grooviz. Déclencheurs : «nouvelle campagne Groover», «on lance la campagne [single]», «intègre le bilan de campagne», CSV Bilan Campagne fourni, «pitch général», «génère les pitchs», «score ce curateur», «score mes curateurs», «plan de campagne Groover», «répartis mon budget Grooviz». Sans fonction précisée, toujours démarrer par la Fonction 0. Registre curateurs, templates et identité artistique vivent dans le projet actif."
 ---
 
-# Curators Groover — Méthode
+# Curators Groover – Méthode
 
 ## Rôle de la skill
 
@@ -15,8 +15,8 @@ Cette skill couvre **cinq tâches précises** liées à une campagne Groover, et
   - **Curateur** — titre.
   - **Type** — champ multi-valeurs (ex. Playlist / Radio / Media). *N'intervient pas dans le choix du message.*
   - **Genres** — champ multi-valeurs, ~2 tags par curateur.
-  - **Une colonne de statut par single passé**, nommée d'après le single (ex. `Single A (24)`, `Single B (26)`). Valeurs : `✅ Accepté` / `❌ Refusé` / `⬜ Silence` / `– Non contacté` / `Veut en savoir plus`.
-  - **Reco prochain single** — texte. Valeurs : `🟢 Renvoyer` / `🟡 Test` / `🟡 Retenter` / `🔴 Stop` / `🟠 Ne pas prioriser` / `⚠️ Exception 🔥`. Une campagne « parenthèse » peut avoir sa propre colonne de reco (ex. `Reco parenthèse`) — voir Fonction 2.
+  - **Une colonne de statut par single passé**, nommée d'après le single (ex. `Single A (24)`, `Single B (26)`). Valeurs : `✅ Accepté` / `❌ Refusé` / `➕ Silence` / `– Non contacté` / `Veut en savoir plus`.
+  - **Reco prochain single** — texte. Valeurs : `🎲 Renvoyer` / `🎱 Test` / `🎱 Retenter` / `🔴 Stop` / `🚨 Ne pas prioriser` / `⚠️ Exception 🔥`. Une campagne « parenthèse » peut avoir sa propre colonne de reco (ex. `Reco parenthèse`) — voir Fonction 2.
   - **Tutoiement** — texte ; `✅` = répondre en tu.
   - **Note** — texte ; **c'est ici que se lit la chaleur d'un refus** (encouragement explicite à revenir, « pas un refus définitif », etc.). **Format** : une entrée par single, taguée et ajoutée à la suite — jamais d'écrasement. Ex. : `[SGA-24] refus mais encourage à revenir · [SGB-26] accepté, cite une influence du projet`. **Contenu** : uniquement du qualitatif non déductible des colonnes de statut (chaleur d'un refus, éléments cités par le curateur, contexte). **Jamais de donnée dérivée** (« double acceptation », compte de refus…) : les compteurs se calculent depuis les colonnes de statut, les stocker dans Note créerait une seconde source de vérité qui divergerait.
 
@@ -28,7 +28,7 @@ La skill **ne reformule pas** les templates. Elle remplit les trous. Le registre
 
 **Déclencheur** : « nouvelle campagne Groover pour [single] », « on lance la campagne [single] », « par où je commence ? », ou l'utilisateur fournit directement un CSV « Bilan Campagne ». **C'est la porte d'entrée par défaut** : si l'utilisateur démarre une campagne sans désigner une fonction précise, passer par ici.
 
-**Règle transverse — quand une ligne entre au registre.** Deux portes d'entrée, pas plus : (1) **à l'ouverture de campagne** (Étape 5) — les nouveaux curateurs retenus au plan entrent avec reco `🟡 Test` et statut `– Non contacté` dans la colonne du single courant ; (2) **au fil de l'eau** (Fonction 3) — un curateur découvert et scoré à la main entre au moment où l'utilisateur décide de le contacter. Filet de sécurité : le CSV de bilan **fait foi pour l'exhaustivité** — à l'Étape 3, tout curateur du CSV absent du registre remonte automatiquement dans le diff comme ligne à créer.
+**Règle transverse — quand une ligne entre au registre.** Deux portes d'entrée, pas plus : (1) **à l'ouverture de campagne** (Étape 5) — les nouveaux curateurs retenus au plan entrent avec reco `🎱 Test` et statut `– Non contacté` dans la colonne du single courant ; (2) **au fil de l'eau** (Fonction 3) — un curateur découvert et scoré à la main entre au moment où l'utilisateur décide de le contacter. Filet de sécurité : le CSV de bilan **fait foi pour l'exhaustivité** — à l'Étape 3, tout curateur du CSV absent du registre remonte automatiquement dans le diff comme ligne à créer.
 
 ### Étape 1 — Cadrage
 
@@ -45,7 +45,7 @@ Une seule question : **« Les statuts de la campagne [single précédent] sont-i
 
 1. **Demander le CSV « Bilan Campagne »** du single précédent (exporté depuis sa page Groover ; archivé à l'emplacement défini dans les instructions du projet).
 2. **Lire le CSV et identifier les colonnes utiles** : nom du curateur, décision/réponse, commentaire. Si le mapping des colonnes n'est pas évident, montrer le mapping déduit et le faire valider — ne jamais deviner en silence.
-3. **Traduire les décisions en statuts du registre** : acceptation/partage → `✅ Accepté` ; refus → `❌ Refusé` ; aucune réponse → `⬜ Silence` ; demande d'informations → `Veut en savoir plus`. Les curateurs du registre non contactés sur cette campagne restent `– Non contacté`.
+3. **Traduire les décisions en statuts du registre** : acceptation/partage → `✅ Accepté` ; refus → `❌ Refusé` ; aucune réponse → `➕ Silence` ; demande d'informations → `Veut en savoir plus`. Les curateurs du registre non contactés sur cette campagne restent `– Non contacté`.
 4. **Préparer les ajouts de Note** : extraire de chaque commentaire uniquement le qualitatif non déductible (chaleur du refus, éléments cités, contexte), au format d'ajout tagué défini dans la description du registre. Ne rien inventer : pas de commentaire → pas d'ajout.
 5. **Construire le diff complet** — une table : `Curateur | Statut actuel | Nouveau statut | Ajout Note`. Lister **à part** les curateurs présents dans le CSV mais absents du registre : l'utilisateur tranche (ajouter au registre ou ignorer) ; s'ils sont ajoutés, demander leurs `Genres` et `Tutoiement` ou les récupérer via la Fonction 3.
 6. **Validation puis écriture.** Aucune écriture avant validation explicite du diff. Après validation, écrire dans le registre (colonne du single + Note), puis confirmer le nombre de lignes modifiées. **Filet de secours** : si l'écriture échoue (source non connectée, erreur API), fournir le diff dans un format directement copiable et laisser l'utilisateur l'appliquer à la main.
@@ -61,7 +61,7 @@ Plusieurs semaines se sont écoulées depuis la dernière campagne : **de nouvea
 1. **Rappeler la procédure d'export** en une ligne (extraction navigateur F12 + script Console → fichiers JSON) et **pointer vers le runbook du projet** (lien dans les instructions du projet).
 2. L'utilisateur fournit le JSON → **comparer d'abord à la table scorée de la campagne précédente** (archivée avec les artefacts de campagne du projet) pour signaler explicitement les curateurs **réellement nouveaux** depuis la dernière campagne, puis dérouler la **Fonction 4** : scoring EV, plan de campagne, répartition du budget Grooviz. Le JSON brut n'a pas besoin d'être archivé : la table scorée contient déjà toute la population de l'export.
 3. **Destination des artefacts** : le scoring / plan de campagne s'archive à l'emplacement des artefacts de campagne défini dans le projet, sur la ligne du single de la campagne en cours. **La table scorée doit rester exhaustive** — une ligne par curateur de l'export, jamais tronquée aux seuls retenus : c'est elle qui sert de photo de la plateforme au jour J pour la comparaison de la campagne suivante.
-4. **Les nouveaux curateurs retenus au plan sont ajoutés au registre** — même protocole de diff validé qu'en Étape 3, conformément à la règle transverse : `Genres` remplis depuis le scoring, `Tutoiement` vide (vouvoiement par défaut), reco `🟡 Test`, statut `– Non contacté` dans la colonne du single courant. C'est ce qui permet à la Fonction 2 de les traiter ensuite en **Cas 1 — premier envoi**.
+4. **Les nouveaux curateurs retenus au plan sont ajoutés au registre** — même protocole de diff validé qu'en Étape 3, conformément à la règle transverse : `Genres` remplis depuis le scoring, `Tutoiement` vide (vouvoiement par défaut), reco `🎱 Test`, statut `– Non contacté` dans la colonne du single courant. C'est ce qui permet à la Fonction 2 de les traiter ensuite en **Cas 1 — premier envoi**.
 
 Étape **sautable** (pas de budget nouveaux curateurs cette fois) : le noter et passer au routage — on peut y revenir depuis l'Étape 6.
 
@@ -105,7 +105,7 @@ Le traitement se fait sur **deux couches indépendantes** : *qui* on contacte (p
 ### Couche 1 — Qui contacter (colonne de reco)
 
 - Lire **`Reco prochain single`** par défaut. Si l'utilisateur désigne explicitement une colonne de reco propre à la campagne (ex. `Reco parenthèse` pour un single « parenthèse »), lire **celle-là** à la place. Ne jamais la deviner ni la modifier.
-- **Inclure** dans le batch tout curateur dont la reco n'est ni `🔴 Stop` ni `🟠 Ne pas prioriser`.
+- **Inclure** dans le batch tout curateur dont la reco n'est ni `🔴 Stop` ni `🚨 Ne pas prioriser`.
 - **`⚠️ Exception 🔥`** : ne pas inclure d'office. Lister à part pour que l'utilisateur tranche.
 
 ### Couche 2 — Quel des 3 messages (dérivé de l'historique)
@@ -116,7 +116,7 @@ Pour chaque curateur retenu, lire ses colonnes de statut par single passé + la 
 2. **Hors batch (Stop).** Le curateur cumule **3 `❌ Refusé` ou plus**. Ne pas générer de message.
 3. **Cas 3 — Relance après refus chaud.** **1 ou 2 `❌ Refusé`**, avec un **encouragement à revenir repérable dans la `Note`**. → Remplir `[single de la campagne actuelle]`.
 4. **Hors batch (refus froid).** **1 ou 2 `❌ Refusé`** sans aucun encouragement dans la `Note`. Ne pas re-pitcher. Les regrouper dans un bloc **« Exclus — refus froid (repêchage manuel possible) »** : l'utilisateur peut en faire remonter manuellement vers le Cas 1 si le single change de registre (ex. une parenthèse pop qui rouvre des curateurs refusés sur du rap).
-5. **Cas 1 — Premier envoi.** Aucun des cas ci-dessus : curateur **jamais contacté**, ou contacté mais **uniquement des `⬜ Silence`**. → Remplir `[genre 1]` et `[genre 2]` depuis la colonne `Genres`.
+5. **Cas 1 — Premier envoi.** Aucun des cas ci-dessus : curateur **jamais contacté**, ou contacté mais **uniquement des `➕ Silence`**. → Remplir `[genre 1]` et `[genre 2]` depuis la colonne `Genres`.
 
 **Liste « À vérifier » — ne jamais deviner.** Sortir à part, **sans générer de message**, tout curateur dont l'historique est ambigu : typiquement une **`Note` de refus dont on ne peut pas juger si elle est chaude ou froide**. L'utilisateur tranche, puis relance si besoin.
 
@@ -258,5 +258,5 @@ Cette skill ne fait **pas** :
 - Du scraping Groover automatique (le site est derrière login).
 - De la création ou modification de templates de pitch (les templates appartiennent à l'utilisateur, vivent dans son projet).
 - De l'écriture dans le registre **en dehors de la Fonction 0** — et en Fonction 0, jamais sans diff validé. Les Fonctions 1 à 4 restent en lecture seule.
-- De la décision sur les exceptions 🔥, les notes de refus ambiguës ou autres cas qualitatifs : elle surface, l'utilisateur tranche.
+- De la décision sur les exceptions ⚠️ 🔥, les notes de refus ambiguës ou autres cas qualitatifs : elle surface, l'utilisateur tranche.
 - De la fabrication de données manquantes (genres, bio, historique) : si une info manque, elle la demande.
