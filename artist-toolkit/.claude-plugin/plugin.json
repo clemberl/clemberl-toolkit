@@ -1,6 +1,6 @@
 {
   "name": "artist-toolkit",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Boîte à outils transversale pour artistes musicaux indépendants : pitchs streaming/éditoriaux (Spotify/Apple/Amazon), contenu social Instagram/TikTok, coaching créatif, campagnes de curateurs Groover, et codification d'identité visuelle. Chaque skill lit l'univers de l'artiste depuis le projet actif — aucune donnée d'artiste codée en dur.",
   "author": {
     "name": "Clément Bernard"
